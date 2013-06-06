@@ -59,7 +59,7 @@ function ctrl(scope, q, http) {
 
     get_services();
 
-    setInterval(get_services, 5000);
+    setInterval(get_services, 600000);
 }
 
 app.controller('DeployerCtrl', ['$scope','$q', '$http', ctrl]);
