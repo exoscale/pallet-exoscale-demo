@@ -2,7 +2,7 @@
   :description "quickstart for pallet-exoscale"
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [com.palletops/pallet "0.8.0-beta.10"]
-                 [ch.exoscale/pallet-exoscale "0.1.6"]
+                 [ch.exoscale/pallet-exoscale "0.1.7"]
                  [com.palletops/upstart-crate "0.8.0-alpha.2"]
                  [org.clojure/data.json       "0.2.2"]
                  [compojure                   "1.1.5"]
