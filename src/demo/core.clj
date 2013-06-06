@@ -141,8 +141,7 @@
   [& args]
 
   (when (= (first args) "bootstrap")
-    (use '[pallet.compute.vmfest :only [add-image]])
-    (add-image vmfest "https://s3.amazonaws.com/vmfest-images/ubuntu-12.04.vdi.gz")
+    (add-image (:vmfest @services) "https://s3.amazonaws.com/vmfest-images/ubuntu-12.04.vdi.gz")
     (System/exit 0))
   
   (println "Welcome to exoscale deployer!")
