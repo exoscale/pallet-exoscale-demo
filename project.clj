@@ -10,7 +10,14 @@
                  [compojure                   "1.1.5"]
                  [ring/ring-core              "1.2.0-beta2"]
                  [ring/ring-jetty-adapter     "1.2.0-beta2"]
-                 [ring/ring-json              "0.2.0"]]
+                 [ring/ring-json              "0.2.0"]
+                 [org.slf4j/slf4j-log4j12     "1.6.4"]
+                 [org.slf4j/slf4j-api         "1.6.4"]
+                 [log4j/log4j                 "1.2.16"
+                  :exclusions [javax.mail/mail
+                               javax.jms/jms
+                               com.sun.jdmk/jmxtools
+                               com.sun.jmx/jmxri]]]
   :main demo.core
   :profiles {:dev
              {:dependencies
