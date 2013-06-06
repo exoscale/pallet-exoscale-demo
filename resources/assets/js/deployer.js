@@ -40,6 +40,10 @@ function ctrl(scope, q, http) {
 	    });
     };
 
+    scope.toggle = function(phase) {
+	phase.reveal_details = ! phase.reveal_details;
+    }
+
     scope.converge = function() {
 	scope.show_converge_output = false;
 	var payload = {
@@ -49,13 +53,9 @@ function ctrl(scope, q, http) {
 
 	http.put('/api/topology', payload)
 	    .success(function (data) {
-		var output = data;
-		output.phases = _.filter(output.phases,
-					 function(p) {
-					     return (p.phase != 'settings');
-					 });
-		scope.converge_output =  output;
+		scope.converge_output =  data;
 		scope.show_converge_output = true;
+		console.log(data);
 	    });
     };
 

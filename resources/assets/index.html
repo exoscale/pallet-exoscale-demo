@@ -68,12 +68,20 @@
 	    </p>
 
 	    <div ng-repeat="phase in converge_output.phases">
-	      Phase {{phase.phase}}
+	      <i class="icon-chevron-sign-right" ng-show="! phase.reveal_details"></i>
+	      <i class="icon-chevron-sign-down" ng-show="phase.reveal_details"></i>
+		
+	      <a ng-click="toggle(phase)">Phase {{phase.phase}} on {{phase.hostname}}</a>
 	      
-	      <div class="well">
-		<pre ng-repeat="results in phase.details.results">
-		  {{results.out}}
-		</pre>
+	      <div class="well" ng-show="phase.reveal_details">
+		
+		<div ng-repeat="results in phase.details.results">
+		  <i class="icon-chevron-sign-right" ng-show="! results.reveal_details"></i>
+		  <i class="icon-chevron-sign-down" ng-show="results.reveal_details"></i>
+
+		  <a ng-click="toggle(results)">{{results['action-symbol']}}</a>
+		  <pre ng-show="results.reveal_details">{{results.out}}</pre>
+		</div>
 	      </div>
 	    </div>
 	  </div>

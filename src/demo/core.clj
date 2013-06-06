@@ -77,13 +77,14 @@
      :failed  (count (filter failed? result))
      :success (count (filter succeeded? result))
      :results (for [r result]
-                (select-keys r [:exit :out]))}))
+                (select-keys r [:exit :out :context :action-symbol]))}))
 
 (defn format-details
   [res]
-  (let [phases (for [{:keys [phase result]} (:results res)
+  (let [phases (for [{:keys [phase result target]} (:results res)
                      :let [details (format-phase-details result)]]
                  {:phase   phase
+                  :hostname (-> target :node node/hostname)
                   :details details
                   :success (= (:total details) (:success details))})]
     {:phases  (vec phases)
