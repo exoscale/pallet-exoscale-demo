@@ -7,7 +7,8 @@
                                               wrap-json-body]]
             [compojure.core           :refer [GET POST DELETE PUT routes]]
             [compojure.handler        :refer [api]]
-            [clojure.java.browse      :refer [browse-url]]            
+            [clojure.java.browse      :refer [browse-url]]
+            [pallet.compute.vmfest    :refer [add-image]]
             [pallet.configure         :as configure]
             [pallet.compute           :as compute]
             [pallet.api               :as api]
@@ -137,7 +138,13 @@
                       (format-details))))))
 
 (defn -main
-  [& _]
+  [& args]
+
+  (when (= (first args) "bootstrap")
+    (use '[pallet.compute.vmfest :only [add-image]])
+    (add-image vmfest "https://s3.amazonaws.com/vmfest-images/ubuntu-12.04.vdi.gz")
+    (System/exit 0))
+  
   (println "Welcome to exoscale deployer!")
   (println "Please visit http://localhost:8080/")
   (let [app (-> (api (handler))

@@ -1,13 +1,4 @@
-# pallet-exoscale-demo
+pallet-exoscale-demo: simple infrastructure with pallet
+=======================================================
 
-A Clojure library designed to ... well, that part is up to you.
 
-## Usage
-
-FIXME
-
-## License
-
-Copyright © 2013 FIXME
-
-Distributed under the Eclipse Public License, the same as Clojure.
