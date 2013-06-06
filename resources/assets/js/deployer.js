@@ -3,63 +3,65 @@ var app = angular.module('main', ['ui.bootstrap']);
 function ctrl(scope, q, http) {
 
     scope.show_converge_output = false;
-    scope.close_modal = function () { scope.show_converge_output = false; };
-    scope.selected_service = undefined;
-    scope.services = [];
-    scope.service_names = [];
+    scope.groups = {};
+    scope.nodes = [];
 
-    http.get('/api/topologies')
+    http.get('/api/topology')
 	.success(function(data) {
-	    scope.topologies = data;
+	    scope.topology = data;
 	});
 
-    var get_nodes = function(service) {
-	http.get('/api/services/' + service + '/nodes')
+    var get_nodes = function() {
+	http.get('/api/nodes')
 	    .success(function(data) {
 		valid_nodes = _.filter(data, function(node) {
-		    return (node['group-name'] != null);
+		    return (node['group-name'] != null && node['running?'] == true);
 		});
-		scope.services[service].nodes = valid_nodes;
-		scope.services[service].nodecount = valid_nodes.length;
-	    });
-    };
+		scope.nodes = valid_nodes;
+		scope.nodecount = valid_nodes.length;
 
-    var get_services = function() {
-	http.get('/api/services')
-	    .success(function(data) {
-		scope.services = data;
-		scope.service_names = _.keys(data);
-
-		if (!scope.selected_service) {
-		    scope.selected_service = _.first(scope.service_names);
-		}
-
-		_.chain(data)
+		var newgroups = _.chain(scope.topology)
 		    .keys()
-		    .each(function(service) {
-			get_nodes(service);
-		    });
+		    .map(function(k) {
+			var wrap = {};
+			wrap[k] = [];
+			return wrap;
+		    })
+		    .reduce(function(memo,item) {
+			return _.extend(memo, item);
+		    }, {})
+		    .value();
+
+		_.each(valid_nodes, function(node) {
+		    newgroups[node['group-name']].push(node);
+		});
+
+		scope.groups = newgroups;
 	    });
-	
     };
 
-    scope.converge = function(s, size, phase) {
+    scope.converge = function() {
+	scope.show_converge_output = false;
 	var payload = {
-	    topology: scope.topologies[s],
+	    topology: scope.topology,
 	    phases: [ "install" ]
 	};
 
-	http.put('/api/services/' + s + '/topology', payload)
+	http.put('/api/topology', payload)
 	    .success(function (data) {
-		// notify of run output
-		scope.converge_output =  data;
+		var output = data;
+		output.phases = _.filter(output.phases,
+					 function(p) {
+					     return (p.phase != 'settings');
+					 });
+		scope.converge_output =  output;
 		scope.show_converge_output = true;
 	    });
     };
 
-    get_services();
+    get_nodes();
 
-    setInterval(get_services, 600000);
+    setInterval(get_nodes, 5000);
 }
 
 app.controller('DeployerCtrl', ['$scope','$q', '$http', ctrl]);

@@ -8,7 +8,6 @@
             [compojure.core           :refer [GET POST DELETE PUT routes]]
             [compojure.handler        :refer [api]]
             [clojure.java.browse      :refer [browse-url]]
-            [pallet.compute.vmfest    :refer [add-image]]
             [pallet.configure         :as configure]
             [pallet.compute           :as compute]
             [pallet.api               :as api]
@@ -19,7 +18,6 @@
             [demo.crate.nginx         :as nginx]
             [demo.crate.shorten       :as shorten]))
 
-;; works on both vmfest and exoscale
 (def node-spec
   (api/node-spec
    :network  {:inbound-ports [22 80 6379 8080]}
@@ -38,10 +36,6 @@
    :redis   #(redis/server-spec   {:bind "0.0.0.0"})
    :shorten #(shorten/server-spec {:listen_host "0.0.0.0"})})
 
-(def bundle-topology
-  {:bundle {:roles [:redis :shorten :nginx]
-            :size  1}})
-
 (def split-topology
   {:lb     {:roles [:nginx]
             :size 1}
@@ -50,14 +44,12 @@
    :web    {:roles [:shorten]
             :size  3}})
 
-(def service-configs
-  (delay (-> (configure/pallet-config) :services)))
-
-(def services
+(def service
   (delay
-   (->> (for [[service config] (:services (configure/pallet-config))]
-          [service (configure/compute-service-from-map config)])
-        (reduce merge {}))))
+   (-> (configure/pallet-config)
+       :services
+       :exoscale
+       (configure/compute-service-from-map))))
 
 (defn cluster-topology
   [topology-config]
@@ -70,12 +62,9 @@
        (reduce merge {})))
 
 (defn cluster
-  [service-name topology-config phases]
-  (let [service (service-name @services)
-        topology (cluster-topology topology-config)]
-    (when-not service
-      (throw (ex-info "need a service configuration for: " service-name)))
-    (api/converge topology :compute service :phase phases)))
+  [topology-config phases]
+  (let [topology (cluster-topology topology-config)]
+    (api/converge topology :compute @service :phase phases)))
 
 
 ;; HTTP Service
@@ -116,34 +105,23 @@
    (GET "/"
         request
         (redirect "/index.html"))
-   (GET "/api/topologies"
-        request
-        (response
-         {:vmfest bundle-topology
-          :exoscale  split-topology}))
-   (GET "/api/services"
-        request
-        (response @service-configs))
-   (GET "/api/services/:service-name/nodes"
+   (GET "/api/nodes"
         {{:keys [service-name]} :params}
         (response
-         (->> (compute/nodes (get @services (keyword service-name)))
+         (->> (compute/nodes @service)
               (map node/node-map))))
-   (PUT "/api/services/:service-name/topology"
+   (GET "/api/topology"
+        request
+        (response
+         split-topology))
+   (PUT "/api/topology"
         {{:keys [service-name]} :params
          {:keys [topology phases] :as body} :body}
-        (response (-> (cluster (keyword service-name)
-                               (sanitize topology)
-                               (map keyword phases))
+        (response (-> (cluster (sanitize topology) (map keyword phases))
                       (format-details))))))
 
 (defn -main
   [& args]
-
-  (when (= (first args) "bootstrap")
-    (add-image (:vmfest @services) "https://s3.amazonaws.com/vmfest-images/ubuntu-12.04.vdi.gz")
-    (System/exit 0))
-  
   (println "Welcome to exoscale deployer!")
   (println "Please visit http://localhost:8080/")
   (let [app (-> (api (handler))

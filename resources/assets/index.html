@@ -25,96 +25,62 @@
       </div>
     </div>
 
-    <div modal="show_converge_output">
-      <div class="modal-header">
-	<h3>Converge Output</h3>
-      </div>
-
-      <div class="modal-body">
-	<p class="alert alert-error" ng-show="!converge_output.success">
-	  Some errors occured while provisioning configuration
-	</p>
-
-	<p class="alert alert-info" ng-show="converge_output.success">
-	  Configuration successfully deployed
-	</p>
-
-	<div ng-repeat="phase in converge_output.phases">
-	  Phase {{phase.phase}}
-	  
-	  <div class="well">
-	    <pre ng-repeat="results in phase.details.results">
-	      {{results.out}}
-	    </pre>
-	  </div>
-	</div>
-      </div>
-
-      <div class="modal-footer">
-	<button class="btn btn-primary" ng-click="close_modal()">dismiss</button>
-      </div>
-
-    </div>
-
     <div class="container-fluid">
       <div class="row-fluid">
-	<div class="span10 offset1">
+	<div class="span6 offset3">
 
-	  <div class="container-fluid">
-	    <div class="row-fluid">
+	  <h3>Topology</h3>
+	  <table class="table table-bordered table-striped">
+	    <tr ng-repeat="(groupname,groupconfig) in topology">
+	      <td>{{groupname}}</td>
+	      <td>
+		<span ng-repeat="role in groupconfig.roles" class="">{{role}}&nbsp;</span>
+	      </td>
+	      <td>
+		<input class="input-mini" type="text" ng-model="groupconfig.size">
+	      </td>
+	      <td>
+		<ul>
+		  <li ng-repeat="node in groups[groupname]">{{node.hostname}}: {{node['primary-ip']}}</li>
+		</ul>
+	      </td>
+	    </tr>
+	    <tr>
+	      <td colspan="4" align="right" style="text-align: right;">
+		<button class="btn btn-primary"
+			ng-click="converge('install')">
+		  <i class="icon-rocket"></i> converge
+		</button>
+	      </td>
+	    </tr>
+	  </table>
 
-	      <div class="span6">
-		<h3>Topologies</h3>
-		<div ng-repeat="(name,config) in topologies">
-		  <h4>{{name}}</h4>
-		  <table class="table table-bordered table-striped">
-		    <tr ng-repeat="(groupname,groupconfig) in config">
-		      <td>
-			{{groupname}}
-		      </td>
-		      <td>
-			<span ng-repeat="role in groupconfig.roles" class="">{{role}}&nbsp;</span>
-		      </td>
-		      <td>
-			<input class="input-mini" type="text" ng-model="groupconfig.size">
-		      </td>
-		    </tr>
-		  </table>
-		</div>
-	      </div>
+	  <div ng-show="show_converge_output">
+	    <h3>Converge Output</h3>
 
-	      <div class="span6">
-		<h3>Services</h3>
-		<table class="table table-bordered table-striped">
-		  <thead>
-		    <tr>
-		      <th>name</th>
-		      <th>actions</th>
-		      <th>details</th>
-		    </tr>
-		  </thead>
-		  <tbody>
-		    <tr ng-repeat="(service,config) in services">
-		      <td>{{service}}</td>
-		      <td>
-			<button class="btn btn-primary"
-				ng-click="converge(service, 1, 'install')">
-			  <i class="icon-rocket"></i> install
-			</button>
-		      </td>
-		      <td>
-			<small>{{config.nodecount}} nodes up</small>
-		      </td>
-		    </tr>
-		  </tbody>
-		</table>
+
+	    <p class="alert alert-error" ng-show="!converge_output.success">
+	      Some errors occured while provisioning configuration
+	    </p>
+
+	    <p class="alert alert-info" ng-show="converge_output.success">
+	      Configuration successfully deployed
+	    </p>
+
+	    <div ng-repeat="phase in converge_output.phases">
+	      Phase {{phase.phase}}
+	      
+	      <div class="well">
+		<pre ng-repeat="results in phase.details.results">
+		  {{results.out}}
+		</pre>
 	      </div>
 	    </div>
 	  </div>
 	</div>
       </div>
-
     </div>
+
 
     <script src="/js/vendor/jquery.js" type="text/javascript"></script>
     <script src="/js/vendor/underscore.js" type="text/javascript"></script>

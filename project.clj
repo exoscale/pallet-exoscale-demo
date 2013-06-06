@@ -4,7 +4,6 @@
                  [com.palletops/pallet "0.8.0-beta.10"]
                  [ch.qos.logback/logback-classic "1.0.0"]
                  [ch.exoscale/pallet-exoscale "0.1.6"]
-                 [com.palletops/pallet-vmfest "0.3.0-alpha.5"]
                  [com.palletops/upstart-crate "0.8.0-alpha.2"]
                  [org.clojure/data.json       "0.2.2"]
                  [compojure                   "1.1.5"]
