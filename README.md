@@ -16,6 +16,13 @@ Add the following in `$HOME/.pallet/services/exoscale.clj`:
 			:api-secret "<API_SECRET>"}}
 ```
 
+## Prerequisites
+
+To run the demo, you will need:
+- A working JVM environment
+- The Leiningen http://leiningen.org/#install
+- A valid exoscale account
+
 ## Running
 
 Simply run `lein run` in the project's directory and point
