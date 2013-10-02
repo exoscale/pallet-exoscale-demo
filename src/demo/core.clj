@@ -71,7 +71,7 @@
 
 (defn format-phase-details
   [result]
-  (let [succeeded? (comp (partial = 0) :exit)
+  (let [succeeded? (comp (partial = 0) (fnil identity 0) :exit)
         failed?    (complement succeeded?)]
     {:total   (count result)
      :failed  (count (filter failed? result))
