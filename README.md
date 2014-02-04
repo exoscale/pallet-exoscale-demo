@@ -10,6 +10,9 @@ The demo app is a simple yet usefull URL-Shortener. This shortener is a 3 tier a
 - Web Server: Python
 - Database Server: Redis
 
+It will make a store a hash of your long url to a exo.po/XXXXX patern 
+
+
 ### Deployer
 
 To make things easier and to hide the pallet magic, we have created a web deployer, 
